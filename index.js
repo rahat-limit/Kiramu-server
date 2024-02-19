@@ -9,7 +9,7 @@ import { UserController } from './controllers/index.js';
 
 mongoose
   .connect(
-    'mongodb+srv://tokesh04:Alisher04@cluster0.ykuqhl3.mongodb.net/blog?retryWrites=true&w=majority',
+    `mongodb+srv://${process.env.MONGO_NAME}:${process.env.MONGO_PASSWORD}@cluster0.ykuqhl3.mongodb.net/blog?retryWrites=true&w=majority`,
   )
   .then(() => console.log('DB OK'))
   .catch((err) => console.log('DB error', err));
