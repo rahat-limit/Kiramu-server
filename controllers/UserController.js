@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import UserSchema from '../models/User.js';
 
 export const register = async (req, res) => {
@@ -17,31 +20,22 @@ export const register = async (req, res) => {
 
     const user = await doc.save();
 
-    const token = jwt.sign(
-      {
-        _id: user._id,
-      },
-      'secret123',
-      {
-        expiresIn: '365d',
-      },
-    );
-
     const { passwordHash, ...userData } = user._doc;
 
     res.json({
       ...userData,
-      token,
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({
+    res.status(404).json({
       message: 'Не удалось зарегистрироваться',
     });
   }
 };
 
 export const login = async (req, res) => {
+  const jwtSecret = process.env.JWT_SECRET;
+
   try {
     const user = await UserSchema.findOne({ email: req.body.email });
 
@@ -54,7 +48,7 @@ export const login = async (req, res) => {
     const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
 
     if (!isValidPass) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: 'Неверный логин или пароль',
       });
     }
@@ -63,7 +57,7 @@ export const login = async (req, res) => {
       {
         _id: user._id,
       },
-      'secret123',
+      jwtSecret,
       {
         expiresIn: '30d',
       },
@@ -77,7 +71,7 @@ export const login = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({
+    res.status(404).json({
       message: 'Не удалось авторизоваться',
     });
   }
@@ -99,7 +93,7 @@ export const getMe = async (req, res) => {
     res.json(userData);
   } catch (err) {
     console.log(err);
-    res.status(500).json({
+    res.status(404).json({
       message: 'Нет доступа',
     });
   }

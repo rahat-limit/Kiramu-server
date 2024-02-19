@@ -3,9 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default (req, res, next) => {
-  const token = req.headers.authorization;
-
   const jwtSecret = process.env.JWT_SECRET;
+  const token = req.headers.authorization?.split(' ')[1];
 
   if (token) {
     try {
