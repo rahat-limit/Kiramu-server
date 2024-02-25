@@ -8,9 +8,7 @@ import { handleValidationErrors, checkAuth } from './utils/index.js';
 import { UserController } from './controllers/index.js';
 
 mongoose
-  .connect(
-    process.env.MONGODB_URL,
-  )
+  .connect(process.env.MONGODB_URL)
   .then(() => console.log('DB OK'))
   .catch((err) => console.log('DB error', err));
 
@@ -19,13 +17,15 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://kiramu.vercel.app/auth/login', 'https://kiramu.vercel.app/', 'https://kiramu.vercel.app/auth/register', 'https://kiramu.vercel.app/profile'],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 
-app.get('/', (req, res) => {res.send('Hello World!')});
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/profile', checkAuth, UserController.getMe);
