@@ -9,7 +9,7 @@ import { UserController } from './controllers/index.js';
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGO_NAME}:${process.env.MONGO_PASSWORD}@cluster0.ykuqhl3.mongodb.net/blog?retryWrites=true&w=majority`,
+    process.env.MONGODB_URL,
   )
   .then(() => console.log('DB OK'))
   .catch((err) => console.log('DB error', err));
@@ -25,9 +25,7 @@ app.use(
   }),
 );
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.get('/', (req, res) => {res.send('Hello World!')});
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/profile', checkAuth, UserController.getMe);
