@@ -17,9 +17,12 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['https://kiramu.vercel.app/auth/login', 'https://kiramu.vercel.app/', 'https://kiramu.vercel.app/auth/register', 'https://kiramu.vercel.app/profile'],
+    origin: [
+      process.env.CLIENT_URL,
+    ],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   }),
 );
 
