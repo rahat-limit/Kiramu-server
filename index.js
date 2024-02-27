@@ -2,10 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
-import { registerValidation, loginValidation } from './validations.js';
+import { registerValidation, loginValidation, commentCreateValidation } from './validations.js';
 
 import { handleValidationErrors, checkAuth } from './utils/index.js';
-import { UserController } from './controllers/index.js';
+import { CommentController, UserController } from './controllers/index.js';
 
 mongoose
   .connect(process.env.MONGODB_URL)
@@ -17,12 +17,9 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      process.env.CLIENT_URL,
-    ],
-    methods: ['GET', 'POST'],
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
   }),
 );
 
@@ -32,6 +29,8 @@ app.get('/', (req, res) => {
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/profile', checkAuth, UserController.getMe);
+app.patch('/profile', checkAuth, UserController.updateProfile);
+app.post('/anime/:id/comments', checkAuth, commentCreateValidation, CommentController.postComment);
 
 app.listen(1000, (err) => {
   if (err) {
