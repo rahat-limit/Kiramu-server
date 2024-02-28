@@ -5,7 +5,7 @@ import cors from 'cors';
 import { registerValidation, loginValidation, commentCreateValidation } from './validations.js';
 
 import { handleValidationErrors, checkAuth } from './utils/index.js';
-import { CommentController, UserController } from './controllers/index.js';
+import { CommentController, UserController, AnimeController } from './controllers/index.js';
 
 mongoose
   .connect(process.env.MONGODB_URL)
@@ -26,11 +26,14 @@ app.use(
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+app.get('/profile', checkAuth, UserController.getMe);
+
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
-app.get('/profile', checkAuth, UserController.getMe);
-app.patch('/profile', checkAuth, UserController.updateProfile);
 app.post('/anime/:id/comments', checkAuth, commentCreateValidation, CommentController.postComment);
+
+app.patch('/profile', checkAuth, UserController.updateProfile);
+
 
 app.listen(1000, (err) => {
   if (err) {
